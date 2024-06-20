@@ -6,25 +6,31 @@ import net.proselyte.qafordevs.exception.DeveloperNotFoundException;
 import net.proselyte.qafordevs.exception.DeveloperWithDuplicateEmailException;
 import net.proselyte.qafordevs.repository.DeveloperRepository;
 import net.proselyte.qafordevs.util.DataUtils;
-import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.BDDMockito;
-import org.mockito.Mockito;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class DeveloperServiceImplTests {
 
-    private final DeveloperRepository developerRepository = Mockito.mock(DeveloperRepository.class);
+    @Mock
+    private DeveloperRepository developerRepository;
 
-    private final DeveloperServiceImpl serviceUnderTest = new DeveloperServiceImpl(developerRepository);
+    @InjectMocks
+    private DeveloperServiceImpl serviceUnderTest;
 
     @Test
     @DisplayName("Test save developer functionality")
@@ -57,18 +63,20 @@ public class DeveloperServiceImplTests {
 
     @Test
     @DisplayName("Test update developer functionality")
-    public void givenDeveloperToUpdate_whenUpdateDeveloper_thenRepositoryIsCalled(){
+    public void givenDeveloperToUpdate_whenUpdateDeveloper_thenRepositoryIsCalled() {
         //given
         DeveloperEntity developerToUpdate = DataUtils.getJonhDoeTransient();
-        BDDMockito.given(developerRepository.existsById(anyInt()))
+        BDDMockito.given(developerRepository.existsById(developerToUpdate.getId()))
                 .willReturn(true);
-        BDDMockito.given(developerRepository.save(any(DeveloperEntity.class)))
+        BDDMockito.given(developerRepository.save(developerToUpdate))
                 .willReturn(developerToUpdate);
+
         //when
-        DeveloperEntity updatedDeveloper = developerRepository.save(developerToUpdate);
+        DeveloperEntity updatedDeveloper = serviceUnderTest.updateDeveloper(developerToUpdate);
+
         //then
         assertThat(updatedDeveloper).isNotNull();
-        verify(developerRepository, times(1)).save(any(DeveloperEntity.class));
+        verify(developerRepository, times(1)).save(developerToUpdate);
     }
 
     @Test
@@ -76,7 +84,7 @@ public class DeveloperServiceImplTests {
     public void givenDeveloperToUpdateWithIncorrectId_whenUpdateDeveloper_thenExceptionIsThrown(){
         //given
         DeveloperEntity developerToUpdate = DataUtils.getJonhDoeTransient();
-        BDDMockito.given(developerRepository.existsById(anyInt())).willReturn(false);
+        BDDMockito.given(developerRepository.existsById(any())).willReturn(false);
         //when
         assertThrows(
                 DeveloperNotFoundException.class, () -> serviceUnderTest.updateDeveloper(developerToUpdate)
