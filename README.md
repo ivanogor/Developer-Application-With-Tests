@@ -1,4 +1,4 @@
-# Developer Management REST API
+# Developer Application
 
 This project is a RESTful API for managing developers, designed to practice writing tests, working with Data Transfer Objects (DTOs), and utilizing Testcontainers for integration testing. The application is built using Spring Boot and leverages various libraries for data persistence, testing, and containerization.
 
