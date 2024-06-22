@@ -4,11 +4,8 @@ This project is a RESTful API for managing developers, designed to practice writ
 
 ## Technologies Used
 
-- **Spring Boot**: Framework for creating stand-alone, production-grade Spring-based applications.
-  - `org.springframework.boot:spring-boot-starter-data-jpa`
-  - `org.springframework.boot:spring-boot-starter-web`
-- **Lombok**: Java annotation library which helps to reduce boilerplate code.
-  - `org.projectlomb.lombok:lombok`
+- **Spring Boot**
+- **Lombok**
 - **Database**:
   - `com.h2database:h2`: In-memory database for development and testing.
   - `org.postgresql:postgresql`: PostgreSQL database for production.
