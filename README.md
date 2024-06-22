@@ -24,9 +24,7 @@ This repository contains a comprehensive application designed to manage and supp
 - **Utilities:**
   - [Lombok](https://projectlombok.org/)
 
-## Getting Started
-
-### Prerequisites
+## Prerequisites
 
 - Java 11 or later
 - Gradle
