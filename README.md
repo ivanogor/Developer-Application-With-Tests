@@ -1,32 +1,32 @@
-# Developer Application
+# Developer Management REST API
 
-## Overview
-
-This repository contains a comprehensive application designed to manage and support developers within an organization. The application leverages a robust set of technologies to ensure efficient development, testing, and deployment processes.
+This project is a RESTful API for managing developers, designed to practice writing tests, working with Data Transfer Objects (DTOs), and utilizing Testcontainers for integration testing. The application is built using Spring Boot and leverages various libraries for data persistence, testing, and containerization.
 
 ## Technologies Used
 
-- **Build Tool:**
-  - [Gradle](https://gradle.org/) 
+- **Spring Boot**: Framework for creating stand-alone, production-grade Spring-based applications.
+  - `org.springframework.boot:spring-boot-starter-data-jpa`
+  - `org.springframework.boot:spring-boot-starter-web`
+- **Lombok**: Java annotation library which helps to reduce boilerplate code.
+  - `org.projectlomb.lombok:lombok`
+- **Database**:
+  - `com.h2database:h2`: In-memory database for development and testing.
+  - `org.postgresql:postgresql`: PostgreSQL database for production.
+- **Testing**:
+  - `org.springframework.boot:spring-boot-starter-test`: Starter for testing Spring Boot applications with libraries including JUnit, Hamcrest, and Mockito.
+  - `org.springframework.boot:spring-boot-testcontainers`: Integration with Testcontainers for Spring Boot.
+  - `org.testcontainers:junit-jupiter`: Testcontainers support for JUnit 5.
+  - `org.testcontainers:postgresql`: PostgreSQL module for Testcontainers.
+  - `org.junit.platform:junit-platform-launcher`: For launching the JUnit Platform.
 
-- **Framework:**
-  - [Spring Boot](https://spring.io/projects/spring-boot) 
+## Features
 
-- **Database:**
-  - [PostgreSQL](https://www.postgresql.org/) 
-  - [H2](https://www.h2database.com/) 
-
-- **Testing:**
-  - [JUnit](https://junit.org/) 
-  - [Mockito](https://site.mockito.org/) 
-  - [Testcontainers](https://www.testcontainers.org/) 
-
-- **Utilities:**
-  - [Lombok](https://projectlombok.org/)
+- **CRUD Operations**: Manage developer entities through RESTful endpoints.
+- **DTOs**: Utilize Data Transfer Objects to encapsulate data sent over the network.
+- **Testcontainers**: Use Docker containers for setting up and tearing down test environments, ensuring consistent and isolated testing scenarios.
 
 ## Prerequisites
 
 - Java 17
-- Gradle
-- PostgreSQL
-- Docker (for Testcontainers)
+- Maven or Gradle for building the project
+- Docker for running Testcontainers
