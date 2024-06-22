@@ -26,7 +26,7 @@ This repository contains a comprehensive application designed to manage and supp
 
 ## Prerequisites
 
-- Java 11 or later
+- Java 17
 - Gradle
 - PostgreSQL
 - Docker (for Testcontainers)
