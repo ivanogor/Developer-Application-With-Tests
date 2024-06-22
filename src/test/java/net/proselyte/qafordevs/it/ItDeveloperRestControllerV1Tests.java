@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.List;
 
@@ -27,8 +28,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
+@Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ItDeveloperRestControllerV1Tests {
+public class ItDeveloperRestControllerV1Tests extends AbstractRestControllerBaseTest{
     @Autowired
     private MockMvc mockMvc;
 
