@@ -3,6 +3,7 @@ package net.proselyte.qafordevs.it;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.proselyte.qafordevs.dto.DeveloperDto;
 import net.proselyte.qafordevs.entity.DeveloperEntity;
+import net.proselyte.qafordevs.entity.Status;
 import net.proselyte.qafordevs.repository.DeveloperRepository;
 import net.proselyte.qafordevs.util.DataUtils;
 import org.hamcrest.CoreMatchers;
@@ -19,9 +20,9 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @ActiveProfiles("test")
@@ -88,10 +89,11 @@ public class ItDeveloperRestControllerV1Tests {
     @DisplayName("Test update developer functionality")
     public void givenDeveloperDto_whenUpdateDeveloper_thenSuccessResponse() throws Exception {
         //given
-        DeveloperDto dto = DataUtils.getJonhDoeDtoPersisted();
+        DeveloperDto dto = DataUtils.getJonhDoeDtoTransient();
         dto.setFirstName("John");
-        DeveloperEntity entity = DataUtils.getJonhDoePersisted();
+        DeveloperEntity entity = DataUtils.getJonhDoeTransient();
         developerRepository.save(entity);
+        dto.setId(entity.getId());
         //when
         ResultActions result = mockMvc.perform(put("/api/v1/developers")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -127,10 +129,10 @@ public class ItDeveloperRestControllerV1Tests {
     @DisplayName("Test get developer by id functionality")
     public void givenId_whenFindById_thenSuccessResponse() throws Exception {
         //given
-        DeveloperEntity entity = DataUtils.getJonhDoePersisted();
-        developerRepository.save(entity);
+        DeveloperEntity developer = DataUtils.getJonhDoeTransient();
+        developerRepository.save(developer);
         //when
-        ResultActions result = mockMvc.perform(get("/api/v1/developers/" + 1)
+        ResultActions result = mockMvc.perform(get("/api/v1/developers/" + developer.getId())
                 .contentType(MediaType.APPLICATION_JSON)
         );
         //then
@@ -147,7 +149,7 @@ public class ItDeveloperRestControllerV1Tests {
     @DisplayName("Test get developer by wrong id functionality")
     public void givenWrongId_whenFindById_thenErrorResponse() throws Exception {
         //given
-        DeveloperEntity entity = DataUtils.getJonhDoePersisted();
+        DeveloperEntity entity = DataUtils.getJonhDoeTransient();
         developerRepository.save(entity);
         //when
         ResultActions result = mockMvc.perform(get("/api/v1/developers/" + 2)
@@ -165,12 +167,11 @@ public class ItDeveloperRestControllerV1Tests {
     @DisplayName("Test get all developers functionality")
     public void givenListOfEmployees_whenFindAll_thenSuccessResponse() throws Exception {
         //given
-        List<DeveloperEntity> developerEntityList = new ArrayList<>(List.of(
-                DataUtils.getJonhDoePersisted(),
-                DataUtils.getFrankJonesPersisted(),
-                DataUtils.getMikeSmithPersisted()
-        ));
-        developerRepository.saveAll(developerEntityList);
+        DeveloperEntity developer1 = DataUtils.getJonhDoeTransient();
+        DeveloperEntity developer2 = DataUtils.getMikeSmithTransient();
+        DeveloperEntity developer3 = DataUtils.getFrankJonesTransient();
+
+        developerRepository.saveAll(List.of(developer1, developer2, developer3));
         //when
         ResultActions result = mockMvc.perform(get("/api/v1/developers")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -179,10 +180,10 @@ public class ItDeveloperRestControllerV1Tests {
         result
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", CoreMatchers.is(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", CoreMatchers.is(developer1.getId())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].firstName", CoreMatchers.is("Jonh")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].lastName",CoreMatchers.is("Doe")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].id", CoreMatchers.is(2)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].id", CoreMatchers.is(developer2.getId())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].firstName", CoreMatchers.is("Mike")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].lastName",CoreMatchers.is("Smith")));
     }
@@ -190,14 +191,13 @@ public class ItDeveloperRestControllerV1Tests {
     @DisplayName("Test get all developers by specialty functionality")
     public void givenListOfEmployeesAndSpecialty_whenFindAll_thenSuccessResponse() throws Exception {
         //given
-        List<DeveloperEntity> developerEntityList = new ArrayList<>(List.of(
-                DataUtils.getJonhDoePersisted(),
-                DataUtils.getMikeSmithPersisted(),
-                DataUtils.getFrankJonesPersisted()
-        ));
-        String specialty = "Java";
+        DeveloperEntity developer1 = DataUtils.getJonhDoeTransient();
+        DeveloperEntity developer2 = DataUtils.getMikeSmithTransient();
+        DeveloperEntity developer3 = DataUtils.getFrankJonesTransient();
 
-        developerRepository.saveAll(developerEntityList);
+        developerRepository.saveAll(List.of(developer1, developer2, developer3));
+
+        String specialty = "Java";
         //when
         ResultActions result = mockMvc.perform(get("/api/v1/developers/specialty/" + specialty)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -206,11 +206,11 @@ public class ItDeveloperRestControllerV1Tests {
         result
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", CoreMatchers.is(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].id", CoreMatchers.is(developer1.getId())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].firstName", CoreMatchers.is("Jonh")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].lastName",CoreMatchers.is("Doe")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].specialty",CoreMatchers.is("Java")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].id", CoreMatchers.is(2)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].id", CoreMatchers.is(developer2.getId())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].firstName", CoreMatchers.is("Mike")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].lastName",CoreMatchers.is("Smith")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].specialty",CoreMatchers.is("Java")));
@@ -218,16 +218,20 @@ public class ItDeveloperRestControllerV1Tests {
     }
 
     @Test
-    @DisplayName("Test soft delete developer vy id functionality")
+    @DisplayName("Test soft delete developer by id functionality")
     public void givenId_whenSoftDelete_thenSuccessResponse() throws Exception {
         //given
-        developerRepository.save(DataUtils.getJonhDoeTransient());
+        DeveloperEntity developer = DataUtils.getJonhDoeTransient();
+        developerRepository.save(developer);
         //when
-        ResultActions result = mockMvc.perform(delete("/api/v1/developers/" + 1)
+        ResultActions result = mockMvc.perform(delete("/api/v1/developers/" + developer.getId())
                 .contentType(MediaType.APPLICATION_JSON)
 
         );
         //then
+        DeveloperEntity obtainedDeveloper = developerRepository.findById(developer.getId()).orElse(null);
+        assertThat(obtainedDeveloper).isNotNull();
+        assertThat(obtainedDeveloper.getStatus()).isEqualTo(Status.DELETED);
         result
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk());
@@ -254,13 +258,16 @@ public class ItDeveloperRestControllerV1Tests {
     @DisplayName("Test hard delete developer by id functionality")
     public void givenId_whenHardDelete_thenSuccessResponse() throws Exception {
         //given
-        developerRepository.save(DataUtils.getJonhDoeTransient());
+        DeveloperEntity developer = DataUtils.getJonhDoeTransient();
+        developerRepository.save(developer);
         //when
-        ResultActions result = mockMvc.perform(delete("/api/v1/developers/" + 1 + "?isHard=true")
+        ResultActions result = mockMvc.perform(delete("/api/v1/developers/" + developer.getId() + "?isHard=true")
                 .contentType(MediaType.APPLICATION_JSON)
 
         );
         //then
+        DeveloperEntity obtainedDeveloper = developerRepository.findById(developer.getId()).orElse(null);
+        assertThat(obtainedDeveloper).isNull();
         result
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk());
